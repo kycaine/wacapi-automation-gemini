@@ -41,10 +41,14 @@ export class GeminiProvider extends LLMProvider {
             });
 
             // Convert DB message format to Gemini's expected format
-            const history = conversationHistory.map((msg) => ({
+            let history = conversationHistory.map((msg) => ({
                 role: msg.role === 'assistant' ? 'model' : 'user',
                 parts: [{ text: msg.content }],
             }));
+
+            if (history.length > 0 && history[0].role === 'model') {
+                history = history.slice(1);
+            }
 
             const chat = model.startChat({ history });
             const result = await chat.sendMessage(userInput);
