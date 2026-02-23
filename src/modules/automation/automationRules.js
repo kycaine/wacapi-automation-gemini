@@ -23,7 +23,7 @@ export const DEFAULT_RULES = [
         trigger_value: 'hello|hi|halo|hey|start',
         action_type: 'reply',
         action_payload: {
-            message: 'Hello! 👋 Welcome. How can I help you today?\n\nType *menu* to see options or just ask me anything.',
+            message: 'Hello! [HI] Welcome. How can I help you today?\n\nType *menu* to see options or just ask me anything.',
         },
         next_state: 'active',
         priority: 100,
@@ -36,7 +36,7 @@ export const DEFAULT_RULES = [
         trigger_value: 'menu|help|options',
         action_type: 'reply',
         action_payload: {
-            message: '📋 *Main Menu*\n\n1️⃣ Type *info* for information\n2️⃣ Type *support* to talk to support\n3️⃣ Type *human* to speak with a human agent\n\nOr just ask me anything!',
+            message: '[MENU] *Main Menu*\n\n1. Type *info* for information\n2. Type *support* to talk to support\n3. Type *human* to speak with a human agent\n\nOr just ask me anything!',
         },
         next_state: null, // Keep current state
         priority: 90,
@@ -49,7 +49,7 @@ export const DEFAULT_RULES = [
         trigger_value: 'human|agent|operator|person|staff',
         action_type: 'human_handoff',
         action_payload: {
-            message: '👤 Connecting you to a human agent. Please wait...\n\nAI responses are now paused.',
+            message: '[HUMAN] Connecting you to a human agent. Please wait...\n\nAI responses are now paused.',
         },
         next_state: 'human_handoff',
         priority: 95,
@@ -62,7 +62,7 @@ export const DEFAULT_RULES = [
         trigger_value: 'bye|goodbye|quit|exit|stop',
         action_type: 'reply',
         action_payload: {
-            message: 'Thank you for reaching out! Have a great day! 👋\n\nFeel free to message us anytime.',
+            message: 'Thank you for reaching out! Have a great day! [HI]\n\nFeel free to message us anytime.',
         },
         next_state: 'ended',
         priority: 85,

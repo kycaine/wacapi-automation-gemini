@@ -19,7 +19,7 @@ async function start() {
 
     // Start HTTP server
     await app.listen({ port: env.PORT, host: '0.0.0.0' });
-    logger.info({ port: env.PORT }, `🚀 Server listening on port ${env.PORT}`);
+    logger.info({ port: env.PORT }, `[RUN] Server listening on port ${env.PORT}`);
 
     // ---- Graceful Shutdown ----
     const shutdown = async (signal) => {

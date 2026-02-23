@@ -69,7 +69,7 @@ async function processMessage(job) {
             phoneNumberId,
             client.accessToken,
             from,
-            '⚠️ Service temporarily unavailable. Please try again later.'
+            '[!] Service temporarily unavailable. Please try again later.'
         );
         return { skipped: true, reason: 'usage_limit' };
     }

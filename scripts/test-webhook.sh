@@ -47,7 +47,7 @@ EOF
 # Compute HMAC-SHA256 signature
 SIGNATURE="sha256=$(echo -n "${PAYLOAD}" | openssl dgst -sha256 -hmac "${META_APP_SECRET}" | awk '{print $2}')"
 
-echo "📤 Sending test webhook to ${WEBHOOK_URL}"
+echo "[SEND] Sending test webhook to ${WEBHOOK_URL}"
 echo "   From: ${FROM}"
 echo "   Message: ${MESSAGE}"
 echo "   Phone Number ID: ${PHONE_NUMBER_ID}"
@@ -61,14 +61,14 @@ RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "${WEBHOOK_URL}" \
 HTTP_CODE=$(echo "${RESPONSE}" | tail -n1)
 BODY=$(echo "${RESPONSE}" | head -n-1)
 
-echo "📥 Response (${HTTP_CODE}):"
+echo "[RECV] Response (${HTTP_CODE}):"
 echo "${BODY}" | python3 -m json.tool 2>/dev/null || echo "${BODY}"
 
 if [ "${HTTP_CODE}" = "200" ]; then
   echo ""
-  echo "✅ Webhook accepted successfully"
+  echo "[V] Webhook accepted successfully"
 else
   echo ""
-  echo "❌ Webhook failed with status ${HTTP_CODE}"
+  echo "[X] Webhook failed with status ${HTTP_CODE}"
   exit 1
 fi

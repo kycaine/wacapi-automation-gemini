@@ -1,4 +1,4 @@
-# WA Automation SaaS
+# WhatsApp Cloud API Automation with GEMINI
 
 A production-ready, multi-tenant WhatsApp Automation SaaS platform built with **Node.js (Fastify)**, **PostgreSQL**, **Redis (BullMQ)**, and **Google Gemini 2.5 Flash**.
 
@@ -6,14 +6,14 @@ A production-ready, multi-tenant WhatsApp Automation SaaS platform built with **
 
 ## Features
 
-- 🏢 **Multi-tenant** — Each client has isolated data, API keys, and WhatsApp credentials
-- 🤖 **Gemini AI** — Token-aware conversation history, not just last N messages
-- 🔄 **State Machine Automation** — Keyword/regex rules with state transitions before AI fallback
-- 👤 **Human Takeover** — Pause AI per conversation; resume on demand
-- 📊 **Usage Tracking** — Monthly message and token counts with configurable limits
-- 🔐 **Security** — AES-256-GCM token encryption, HMAC webhook verification, API key hashing
-- ⚡ **Async Queue** — BullMQ workers for scalable, reliable message processing
-- 🐳 **Docker Ready** — Full Docker Compose stack
+- [ORG] **Multi-tenant** — Each client has isolated data, API keys, and WhatsApp credentials
+- [AI] **Gemini AI** — Token-aware conversation history, not just last N messages
+- [AUTO] **State Machine Automation** — Keyword/regex rules with state transitions before AI fallback
+- [HUMAN] **Human Takeover** — Pause AI per conversation; resume on demand
+- [STAT] **Usage Tracking** — Monthly message and token counts with configurable limits
+- [SEC] **Security** — AES-256-GCM token encryption, HMAC webhook verification, API key hashing
+- [QUEUE] **Async Queue** — BullMQ workers for scalable, reliable message processing
+- [DOCKER] **Docker Ready** — Full Docker Compose stack
 
 ---
 

@@ -15,11 +15,11 @@ export async function runMigrations() {
 
     const client = await pool.connect();
     try {
-        console.log('🗄  Running database migrations...');
+        console.log('[DB] Running database migrations...');
         await client.query(schema);
-        console.log('✅ Database migrations complete.');
+        console.log('[V] Database migrations complete.');
     } catch (error) {
-        console.error('❌ Migration failed:', error.message);
+        console.error('[X] Migration failed:', error.message);
         throw error;
     } finally {
         client.release();
