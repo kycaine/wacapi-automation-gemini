@@ -5,6 +5,7 @@
 -- Enable UUID generation
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE EXTENSION IF NOT EXISTS "vector";
 
 -- ============================================================
 -- CLIENTS (Tenants)
@@ -132,6 +133,24 @@ CREATE INDEX IF NOT EXISTS idx_processed_messages_client_id ON processed_message
 CREATE INDEX IF NOT EXISTS idx_processed_messages_processed_at ON processed_messages(processed_at);
 
 -- ============================================================
+-- KNOWLEDGE (RAG & Prompt context)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS knowledge (
+  id             UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  client_id      UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+  title          VARCHAR(255) NOT NULL,
+  content        TEXT NOT NULL,
+  type_knowledge VARCHAR(50) NOT NULL CHECK (type_knowledge IN ('rag', 'prompt')),
+  embedding      VECTOR(768),
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_knowledge_client_id ON knowledge(client_id);
+CREATE INDEX IF NOT EXISTS idx_knowledge_type ON knowledge(type_knowledge);
+CREATE INDEX IF NOT EXISTS idx_knowledge_client_type ON knowledge(client_id, type_knowledge);
+
+-- ============================================================
 -- TRIGGERS: auto-update updated_at columns
 -- ============================================================
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -165,6 +184,12 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_automation_rules_updated_at') THEN
     CREATE TRIGGER trg_automation_rules_updated_at
       BEFORE UPDATE ON automation_rules
+      FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_knowledge_updated_at') THEN
+    CREATE TRIGGER trg_knowledge_updated_at
+      BEFORE UPDATE ON knowledge
       FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
   END IF;
 END;

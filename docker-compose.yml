@@ -3,7 +3,7 @@ version: '3.9'
 services:
   # ---- PostgreSQL ----
   postgres:
-    image: postgres:16-alpine
+    image: pgvector/pgvector:pg16
     container_name: wacapi_postgres
     restart: unless-stopped
     environment:
@@ -42,6 +42,7 @@ services:
 
   # ---- Application ----
   app:
+    profiles: [ "manual" ]
     build:
       context: .
       dockerfile: Dockerfile

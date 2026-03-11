@@ -97,6 +97,10 @@ export async function buildApp() {
             const history = await usageService.getUsageHistory(request.client.id);
             return reply.send({ success: true, data: { current, history } });
         });
+
+        // Knowledge Management
+        const knowledgeRoutes = (await import('./modules/knowledge/index.js')).default;
+        apiApp.register(knowledgeRoutes);
     }, { prefix: '/api' });
 
     // ---- Global Error Handler ----

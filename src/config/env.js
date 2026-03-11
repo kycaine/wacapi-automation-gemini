@@ -12,6 +12,7 @@ const envSchema = z.object({
   // JWT
   JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
   JWT_EXPIRES_IN: z.string().default('7d'),
+  ADMIN_TOKEN: z.string().min(1, 'ADMIN_TOKEN is required'),
 
   // Encryption
   ENCRYPTION_KEY: z.string().length(64, 'ENCRYPTION_KEY must be a 64-char hex string (32 bytes)'),
@@ -35,6 +36,7 @@ const envSchema = z.object({
   // Gemini
   GEMINI_API_KEY: z.string().min(1, 'GEMINI_API_KEY is required'),
   GEMINI_MODEL: z.string().default('gemini-2.5-flash'),
+  GEMINI_EMBEDDING_MODEL: z.string().default('embedding-001'),
   GEMINI_MAX_HISTORY_TOKENS: z.coerce.number().default(8000),
   GEMINI_MAX_OUTPUT_TOKENS: z.coerce.number().default(1024),
 

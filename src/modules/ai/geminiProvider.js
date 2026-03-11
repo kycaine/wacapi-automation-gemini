@@ -98,4 +98,27 @@ export class GeminiProvider extends LLMProvider {
         if (!text) return 0;
         return Math.ceil(text.length / 4);
     }
+
+    /**
+     * Generate an embedding for the given text using Gemini.
+     *
+     * @param {string} text
+     * @returns {Promise<number[]>} - 768-dimensional vector
+     */
+    async embedText(text) {
+        try {
+            const model = this._client.getGenerativeModel({ model: env.GEMINI_EMBEDDING_MODEL });
+            const result = await model.embedContent(text);
+            const embedding = result.embedding;
+
+            if (!embedding || !embedding.values) {
+                throw new ExternalServiceError('Gemini', 'Failed to generate embedding');
+            }
+
+            return embedding.values;
+        } catch (error) {
+            logger.error({ err: error, provider: this.name }, 'Gemini embedding error');
+            throw new ExternalServiceError('Gemini', error.message || 'Unknown embedding error');
+        }
+    }
 }

@@ -16,13 +16,18 @@ export class AIService {
      * @param {string} params.systemPrompt - Client's system prompt
      * @param {Array<{role: string, content: string, tokens_used: number}>} params.fullHistory - All messages
      * @param {string} params.userInput - Current user message
+     * @param {string} [params.additionalContext] - Optional RAG/Prompt context
      * @returns {Promise<{text: string, tokensUsed: number}>}
      */
-    async generateResponse({ systemPrompt, fullHistory, userInput }) {
+    async generateResponse({ systemPrompt, fullHistory, userInput, additionalContext }) {
+        const finalSystemPrompt = additionalContext
+            ? `${systemPrompt}\n\n[CONTEXT KNOWLEDGE]\n${additionalContext}`
+            : systemPrompt;
+
         const truncatedHistory = this._truncateHistoryByTokens(
             fullHistory,
             userInput,
-            systemPrompt
+            finalSystemPrompt
         );
 
         logger.debug({
@@ -32,10 +37,17 @@ export class AIService {
         }, 'AI history truncated');
 
         return provider.generateResponse({
-            systemPrompt,
+            systemPrompt: finalSystemPrompt,
             conversationHistory: truncatedHistory,
             userInput,
         });
+    }
+
+    /**
+     * Proxy to generate embedding via provider.
+     */
+    async embedText(text) {
+        return provider.embedText(text);
     }
 
     /**

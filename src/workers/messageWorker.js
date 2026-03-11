@@ -11,6 +11,7 @@ import { UsageService } from '../modules/usage/usageService.js';
 import { AIService } from '../modules/ai/aiService.js';
 import { AutomationEngine } from '../modules/automation/automationEngine.js';
 import { WhatsAppService } from '../modules/whatsapp/whatsappService.js';
+import { KnowledgeService } from '../modules/knowledge/knowledgeService.js';
 
 const clientsService = new ClientsService();
 const conversationsService = new ConversationsService();
@@ -19,6 +20,7 @@ const usageService = new UsageService();
 const aiService = new AIService();
 const automationEngine = new AutomationEngine();
 const whatsappService = new WhatsAppService();
+const knowledgeService = new KnowledgeService();
 
 /**
  * Process a single incoming WhatsApp message.
@@ -38,9 +40,9 @@ const whatsappService = new WhatsAppService();
  */
 async function processMessage(job) {
     const { waMessageId, from, text, phoneNumberId } = job.data;
+    logger.info({ phoneNumberId, jobId: job.id }, 'Worker received message job');
 
     const jobLogger = logger.child({ jobId: job.id, waMessageId, from });
-    jobLogger.info('Processing message');
 
     // --- Step 1: Idempotency check ---
     const alreadyProcessed = await messagesService.isMessageProcessed(waMessageId);
@@ -54,7 +56,7 @@ async function processMessage(job) {
     try {
         client = await clientsService.getClientByPhoneNumberId(phoneNumberId);
     } catch (error) {
-        jobLogger.warn({ phoneNumberId }, 'No client found for phone number ID');
+        jobLogger.warn({ phoneNumberId, err: error.message, stack: error.stack }, 'Failed to load client for message');
         return { skipped: true, reason: 'unknown_client' };
     }
 
@@ -172,11 +174,30 @@ async function processMessage(job) {
  */
 async function callAI(client, conversation, userInput, log) {
     try {
+        // 1. Get Prompt-based knowledge
+        const promptKnowledge = await knowledgeService.getPromptKnowledge(client.id);
+
+        // 2. Perform RAG search for relevant knowledge
+        const ragKnowledgeResults = await knowledgeService.searchRelevantKnowledge(client.id, userInput);
+        const ragKnowledgeStr = ragKnowledgeResults.length > 0
+            ? ragKnowledgeResults.map(k => `- ${k.content}`).join('\n')
+            : '';
+
+        // 3. Combine contexts
+        let additionalContext = '';
+        if (promptKnowledge) {
+            additionalContext += `General Business Info:\n${promptKnowledge}\n\n`;
+        }
+        if (ragKnowledgeStr) {
+            additionalContext += `Relevant specific info for this query:\n${ragKnowledgeStr}`;
+        }
+
         const fullHistory = await messagesService.getRecentHistory(conversation.id, 100);
         const result = await aiService.generateResponse({
             systemPrompt: client.system_prompt,
             fullHistory,
             userInput,
+            additionalContext: additionalContext || undefined
         });
         return result;
     } catch (error) {

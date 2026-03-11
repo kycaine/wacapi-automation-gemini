@@ -18,6 +18,7 @@ export class ClientsRepository {
     }
 
     async findByPhoneNumberId(phoneNumberId) {
+        console.log(`[DEBUG_DB] Finding client with phoneNumberId: "${phoneNumberId}" (type: ${typeof phoneNumberId}, length: ${phoneNumberId?.length})`);
         const result = await query(
             `SELECT id, name, whatsapp_business_id, whatsapp_phone_number_id,
               access_token_encrypted, system_prompt, monthly_message_limit,
@@ -27,6 +28,7 @@ export class ClientsRepository {
        LIMIT 1`,
             [phoneNumberId]
         );
+        console.log(`[DEBUG_DB] Found client: ${result.rows.length > 0 ? result.rows[0].id : 'NULL'}`);
         return result.rows[0] || null;
     }
 

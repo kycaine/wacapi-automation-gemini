@@ -31,13 +31,15 @@ export async function authMiddleware(request, reply) {
     request.client = result.rows[0];
 }
 
+import { env } from '../../config/env.js';
+
 /**
  * Admin-only middleware — validates a static admin token from env.
  * Used for client registration endpoints.
  */
 export async function adminAuthMiddleware(request, reply) {
     const token = request.headers['x-admin-token'];
-    const adminToken = process.env.ADMIN_TOKEN;
+    const adminToken = env.ADMIN_TOKEN;
 
     if (!adminToken) {
         throw new Error('ADMIN_TOKEN not configured');
