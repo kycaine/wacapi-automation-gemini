@@ -26,15 +26,19 @@ export class ConversationsRepository {
         return result.rows[0] || null;
     }
 
-    async findByClientId(clientId, { limit = 20, offset = 0 } = {}) {
-        const result = await query(
-            `SELECT id, client_id, wa_number, state, is_human_active, metadata, created_at, updated_at
-       FROM conversations
-       WHERE client_id = $1
-       ORDER BY updated_at DESC
-       LIMIT $2 OFFSET $3`,
-            [clientId, limit, offset]
-        );
+    async findByClientId(clientId, { limit = 20, offset = 0, search = '' } = {}) {
+        const queryStr = `
+      SELECT id, client_id, wa_number, state, is_human_active, metadata, created_at, updated_at
+      FROM conversations
+      WHERE client_id = $1
+      ${search ? 'AND wa_number ILIKE $4' : ''}
+      ORDER BY updated_at DESC
+      LIMIT $2 OFFSET $3`;
+
+        const params = [clientId, limit, offset];
+        if (search) params.push(`%${search}%`);
+
+        const result = await query(queryStr, params);
         return result.rows;
     }
 

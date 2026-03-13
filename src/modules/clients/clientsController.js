@@ -84,3 +84,12 @@ export async function deleteClient(request, reply) {
     await service.deleteClient(request.params.id);
     return reply.code(204).send();
 }
+
+export async function resetApiKey(request, reply) {
+    const result = await service.resetApiKey(request.params.id);
+    return reply.send({
+        success: true,
+        data: result,
+        message: 'API Key reset successfully. Save it now!',
+    });
+}

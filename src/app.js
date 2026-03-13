@@ -34,7 +34,7 @@ export async function buildApp() {
 
     // ---- Plugins ----
     await app.register(cors, {
-        origin: env.NODE_ENV === 'production' ? false : true,
+        origin: env.NODE_ENV === 'production' ? false : ['http://localhost:3001', 'http://127.0.0.1:3001'],
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     });
 
@@ -74,6 +74,7 @@ export async function buildApp() {
         adminApp.get('/clients/:id', clientsController.getClient);
         adminApp.put('/clients/:id', clientsController.updateClient);
         adminApp.delete('/clients/:id', clientsController.deleteClient);
+        adminApp.post('/clients/:id/reset-api-key', clientsController.resetApiKey);
     }, { prefix: '/api/admin' });
 
     // ---- Authenticated API Routes (API key required) ----

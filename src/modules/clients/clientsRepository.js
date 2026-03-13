@@ -92,4 +92,12 @@ export class ClientsRepository {
         );
         return result.rowCount > 0;
     }
+
+    async updateApiKeyHash(id, apiKeyHash) {
+        const result = await query(
+            'UPDATE clients SET api_key_hash = $2, updated_at = NOW() WHERE id = $1 RETURNING id',
+            [id, apiKeyHash]
+        );
+        return result.rowCount > 0;
+    }
 }

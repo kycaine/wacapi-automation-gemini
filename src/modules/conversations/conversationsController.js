@@ -7,7 +7,8 @@ const service = new ConversationsService();
 export async function listConversations(request, reply) {
     const limit = Math.min(parseInt(request.query.limit) || 20, 100);
     const offset = parseInt(request.query.offset) || 0;
-    const conversations = await service.listConversations(request.client.id, { limit, offset });
+    const search = request.query.q || '';
+    const conversations = await service.listConversations(request.client.id, { limit, offset, search });
     return reply.send({ success: true, data: conversations });
 }
 

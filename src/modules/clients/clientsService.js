@@ -94,4 +94,15 @@ export class ClientsService {
         if (!deleted) throw new NotFoundError('Client');
         return { success: true };
     }
+
+    async resetApiKey(id) {
+        const existing = await repo.findById(id);
+        if (!existing) throw new NotFoundError('Client');
+
+        const apiKey = generateApiKey();
+        const apiKeyHash = hashApiKey(apiKey);
+
+        await repo.updateApiKeyHash(id, apiKeyHash);
+        return { apiKey };
+    }
 }

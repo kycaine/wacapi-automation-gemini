@@ -14,8 +14,8 @@ export class ConversationsService {
         return conv;
     }
 
-    async listConversations(clientId, { limit, offset } = {}) {
-        return repo.findByClientId(clientId, { limit, offset });
+    async listConversations(clientId, { limit, offset, search } = {}) {
+        return repo.findByClientId(clientId, { limit, offset, search });
     }
 
     async transitionState(id, clientId, newState) {
