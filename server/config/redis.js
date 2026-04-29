@@ -1,10 +1,14 @@
 import { env } from './env.js';
 
-export const redisConfig = {
+const connectionConfig = env.REDIS_URL || {
     host: env.REDIS_HOST,
     port: env.REDIS_PORT,
     password: env.REDIS_PASSWORD || undefined,
     db: env.REDIS_DB,
+};
+
+export const redisConfig = {
+    ...(typeof connectionConfig === 'string' ? { url: connectionConfig } : connectionConfig),
     maxRetriesPerRequest: null, // Required for BullMQ
     enableReadyCheck: false,
     retryStrategy: (times) => {
@@ -13,9 +17,5 @@ export const redisConfig = {
     },
 };
 
-export const bullMQConnection = {
-    host: env.REDIS_HOST,
-    port: env.REDIS_PORT,
-    password: env.REDIS_PASSWORD || undefined,
-    db: env.REDIS_DB,
-};
+// BullMQ can take a connection string or a connection object
+export const bullMQConnection = connectionConfig;
