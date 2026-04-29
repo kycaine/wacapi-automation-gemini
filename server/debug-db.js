@@ -1,4 +1,4 @@
-import { query } from './src/database/index.js';
+import { query } from './database/index.js';
 
 async function debug() {
     const idToSearch = '211009238765391';

@@ -20,7 +20,7 @@ A production-ready, multi-tenant WhatsApp Automation SaaS platform built with **
 ## Architecture
 
 ```
-src/
+server/
 ├── config/          # env.js (Zod), database.js, redis.js
 ├── database/        # schema.sql, migrate.js, index.js
 ├── modules/
@@ -180,9 +180,9 @@ If no rule matches, the message is sent to Gemini AI automatically.
 
 To swap Gemini for another provider:
 
-1. Create `src/modules/ai/openaiProvider.js` extending `LLMProvider`
+1. Create `server/modules/ai/openaiProvider.js` extending `LLMProvider`
 2. Implement `generateResponse({ systemPrompt, conversationHistory, userInput })`
-3. Update the import in `src/modules/ai/aiService.js`
+3. Update the import in `server/modules/ai/aiService.js`
 
 ---
 

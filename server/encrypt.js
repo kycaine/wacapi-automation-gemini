@@ -1,4 +1,4 @@
-import { encrypt } from './src/services/encryptionService.js';
+import { encrypt } from './services/encryptionService.js';
 
 const token = process.argv[2];
 
