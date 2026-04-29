@@ -1,3 +1,12 @@
+---
+title: WACAPI Automation Gemini
+emoji: 🤖
+colorFrom: blue
+colorTo: green
+sdk: docker
+pinned: false
+---
+
 # WhatsApp Cloud API Automation with GEMINI
 
 A production-ready, multi-tenant WhatsApp Automation SaaS platform built with **Node.js (Fastify)**, **PostgreSQL**, **Redis (BullMQ)**, and **Google Gemini 2.5 Flash**.
