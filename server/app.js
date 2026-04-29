@@ -1,4 +1,7 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
 import Fastify from 'fastify';
+import fastifyStatic from '@fastify/static';
 import cors from '@fastify/cors';
 import rateLimit from '@fastify/rate-limit';
 import sensible from '@fastify/sensible';
@@ -13,6 +16,9 @@ import * as conversationsController from './modules/conversations/conversationsC
 import * as messagesController from './modules/messages/messagesController.js';
 import * as webhookController from './modules/whatsapp/webhookController.js';
 import { signatureMiddleware } from './modules/whatsapp/signatureMiddleware.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export async function buildApp() {
     const app = Fastify({
@@ -51,6 +57,13 @@ export async function buildApp() {
     });
 
     await app.register(sensible);
+
+    // ---- Serve Frontend Dashboard ----
+    const clientPublicPath = path.join(__dirname, '../client/public');
+    await app.register(fastifyStatic, {
+        root: clientPublicPath,
+        prefix: '/',
+    });
 
     // ---- Health check (no auth) ----
     app.get('/health', async (request, reply) => {

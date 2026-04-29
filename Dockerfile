@@ -1,52 +1,48 @@
 # ============================================================
-# Multi-stage Dockerfile for WA Automation SaaS (HF Optimized)
+# Dockerfile for Hugging Face Space (Full Stack - Port 7860)
 # ============================================================
 
 # --- Stage 1: Dependencies ---
 FROM node:20-alpine AS deps
 WORKDIR /app
 
-# Install build tools untuk native modules (penting untuk beberapa library crypto/ML)
 RUN apk add --no-cache python3 make g++
 
 COPY package*.json ./
-# Install production dependencies saja
 RUN npm ci --only=production && npm cache clean --force
 
 # --- Stage 2: Production Image ---
 FROM node:20-alpine AS production
 WORKDIR /app
 
-# Set environment ke production
+# Set environment to production
 ENV NODE_ENV=production
 
-# --- PENYETARAAN PORT ---
-# Di lokal akan pakai 3000, di HF kita akan timpa lewat Settings menjadi 7860
-ENV PORT=3000
+# Hugging Face Spaces use port 7860 by default
+ENV PORT=7860
 
-# Create non-root user untuk keamanan (Best Practice)
+# Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
-  adduser -S appuser -u 1001 -G nodejs
+    adduser -S appuser -u 1001 -G nodejs
 
 # Copy source code
 COPY --chown=appuser:nodejs . .
 
-# Copy node_modules dari stage deps
+# Copy production node_modules from deps stage
 COPY --from=deps --chown=appuser:nodejs /app/node_modules ./node_modules
 
-# Bersihkan file sampah agar image ramping
-RUN rm -f .env.example Dockerfile docker-compose.yml README.md
+# Clean up build files
+RUN rm -f .env.example Dockerfile* docker-compose.yml README.md run.js
 
-# Gunakan user non-root
+# Switch to non-root user
 USER appuser
 
-# Expose port (HF akan otomatis mendeteksi port 7860 jika diset di Env)
-EXPOSE 3000
+# Expose the Hugging Face port
 EXPOSE 7860
 
-# Healthcheck disesuaikan dengan variabel PORT
+# Healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:' + (process.env.PORT || 3000) + '/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1) })"
+  CMD node -e "require('http').get('http://localhost:7860/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1) })"
 
-# Start aplikasi
-CMD ["node", "run.js"]
+# Start the application (Backend + Frontend combined)
+CMD ["node", "server/server.js"]
